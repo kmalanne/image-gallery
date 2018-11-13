@@ -1,0 +1,19 @@
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-indicator {
+  animation: rotation 0.95s linear 0s infinite;
+  height: 30px;
+  width: 30px;
+  border: 5px solid #fafafa;
+  border-right-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  z-index: 9999;
+}
