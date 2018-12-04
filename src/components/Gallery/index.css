@@ -2,12 +2,23 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, 210px);
   grid-auto-rows: 210px;
-  grid-gap: 10px;
+  grid-gap: 3px;
   justify-content: center;
 }
 
+.gallery-image {
+  width: 100%;
+  cursor: pointer;
+  filter: grayscale(0%);
+  transition: all 0.5s ease;
+}
+
+.gallery-image:hover {
+  filter: grayscale(70%);
+}
+
 @media screen and (min-width: 470px) {
-  .gallery .header {
+  .gallery-image:first-of-type {
     grid-row: span 2;
     grid-column: span 2;
   }

@@ -46,8 +46,7 @@ export class Gallery extends Component<{}, IGalleryState> {
         'https://jsonplaceholder.typicode.com/album/1/photos'
       );
       const json = await response.json();
-      const nextImages = json.map((image: IImage, index: number) => ({
-        header: this.state.images.length === 0 && index === 0,
+      const nextImages = json.map((image: IImage) => ({
         id: image.id,
         thumbnailUrl: image.thumbnailUrl,
         url: image.url,
@@ -73,7 +72,7 @@ export class Gallery extends Component<{}, IGalleryState> {
           {this.state.images.map((image: IImage) => (
             <Image
               key={image.id}
-              header={image.header}
+              className={'gallery-image'}
               id={image.id}
               thumbnailUrl={image.thumbnailUrl}
               url={image.url}

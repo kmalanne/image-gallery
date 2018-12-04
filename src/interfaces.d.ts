@@ -1,6 +1,6 @@
 interface IImage {
-  header: boolean;
-  id: number;
+  className: string;
+  id: number | string;
   url: string;
   thumbnailUrl: string;
 }
