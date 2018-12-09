@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Image } from '../Image';
 
-export class Lightbox extends Component {
+export class Lightbox extends Component<ILightbox, {}> {
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
   }
@@ -34,6 +34,19 @@ export class Lightbox extends Component {
     }
   };
 
+  renderImages = () => {
+    const { currentImage, images } = this.props;
+
+    return (
+      <Image
+        id="modal-image"
+        className="modal-image"
+        thumbnailUrl={''}
+        url={''}
+      />
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -43,14 +56,7 @@ export class Lightbox extends Component {
           onClick={this.closeModal}
           onTouchEnd={this.closeModal}
         >
-          <div className="modal_content">
-            <Image
-              id="modal-image"
-              className="modal-image"
-              thumbnailUrl={''}
-              url={''}
-            />
-          </div>
+          <div className="modal_content">{this.renderImages()}</div>
         </div>
       </React.Fragment>
     );

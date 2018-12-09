@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './index.css';
 import { Image } from '../Image';
 import { LoadingIndicator } from '../LoadingIndicator';
+import { classNames } from '../../utils/classNames';
 
 const initialState = {
   error: false,
@@ -10,6 +11,8 @@ const initialState = {
   images: [],
 };
 type State = Readonly<typeof initialState>;
+
+const styleClasses = ['horizontal', 'vertical', 'big'];
 
 export class Gallery extends Component<{}, IGalleryState> {
   readonly state: State = initialState;
@@ -65,14 +68,24 @@ export class Gallery extends Component<{}, IGalleryState> {
     }
   };
 
+  getImageClass = (index: number) => {
+    const style =
+      styleClasses[Math.floor(Math.random() * Math.floor(styleClasses.length))];
+
+    return classNames([
+      ['gallery-image', true],
+      [style, index !== 0 && index % 5 === 0 && true],
+    ]);
+  };
+
   render() {
     return (
       <React.Fragment>
         <div className="gallery">
-          {this.state.images.map((image: IImage) => (
+          {this.state.images.map((image: IImage, index: number) => (
             <Image
               key={image.id}
-              className={'gallery-image'}
+              className={this.getImageClass(index)}
               id={image.id}
               thumbnailUrl={image.thumbnailUrl}
               url={image.url}
