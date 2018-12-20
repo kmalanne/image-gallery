@@ -8,10 +8,10 @@
 }
 
 .loading-indicator {
-  animation: rotation 0.95s linear 0s infinite;
+  animation: rotation 1s linear 0s infinite;
   height: 30px;
   width: 30px;
-  border: 5px solid #fafafa;
+  border: 5px solid #485460;
   border-right-color: transparent;
   border-radius: 50%;
   display: inline-block;

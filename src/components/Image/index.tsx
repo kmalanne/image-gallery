@@ -1,11 +1,26 @@
-import React, { SFC } from 'react';
+import React, { Component } from 'react';
 
-export const Image: SFC<IImage> = props => {
-  const { className, thumbnailUrl } = props;
+export interface ImageProps {
+  className: string;
+  id: number;
+  onClick: (id: number) => void;
+  src?: string;
+  url?: string;
+  thumbnailUrl?: string;
+}
 
-  return (
-    <React.Fragment>
-      <img className={className} src={thumbnailUrl} />
-    </React.Fragment>
-  );
-};
+export class Image extends Component<ImageProps, {}> {
+  handleClick = () => {
+    this.props.onClick(this.props.id);
+  };
+
+  render() {
+    const { className, src } = this.props;
+
+    return (
+      <React.Fragment>
+        <img className={className} src={src} onClick={this.handleClick} />
+      </React.Fragment>
+    );
+  }
+}
