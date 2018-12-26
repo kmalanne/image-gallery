@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Image, ImageProps } from '../Image';
+import { Icon } from '../Icon';
+import { ICONS } from '../../utils/constants';
 
 export interface LightboxProps {
   currentImage: number;
@@ -33,11 +35,11 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
     switch (event.keyCode) {
       case 13:
       case 27:
-      // close
+        this.props.onClose();
       case 37:
-      // left
+        this.goToPreviousImage();
       case 39:
-      // right
+        this.goToNextImage();
       default:
         return;
     }
@@ -48,14 +50,18 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
   ): void => {
     event.preventDefault();
 
-    if ((event.target as HTMLElement).id === 'lightbox-backdrop') {
+    if ((event.target as HTMLElement).id === 'lightbox') {
       this.props.onClose();
     }
   };
 
   handleClickImage = () => {};
 
-  renderImages = () => {
+  goToPreviousImage = () => {};
+
+  goToNextImage = () => {};
+
+  renderImage = () => {
     const { currentImage, images } = this.props;
 
     const image = images[currentImage];
@@ -70,21 +76,57 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
     );
   };
 
+  renderPreviousArrow = () => {
+    if (this.props.currentImage === 0) {
+      return null;
+    }
+
+    return (
+      <button
+        className="lightbox-button"
+        aria-label="Previous"
+        onClick={this.goToPreviousImage}
+      >
+        <Icon icon={ICONS.ARROW_LEFT} size={48} />
+      </button>
+    );
+  };
+
+  renderNextArrow = () => {
+    const { currentImage, images } = this.props;
+
+    if (currentImage === images.length - 1) {
+      return null;
+    }
+
+    return (
+      <button
+        className="lightbox-button"
+        aria-label="Next"
+        onClick={this.goToNextImage}
+      >
+        <Icon icon={ICONS.ARROW_RIGHT} size={48} />
+      </button>
+    );
+  };
+
   render() {
     return ReactDOM.createPortal(
-      <div
-        id="lightbox-backdrop"
-        className="lightbox-backdrop"
-        onClick={this.handleClose}
-      >
-        <div className="lightbox">
-          {/* <button className="lightbox-close-button" aria-label="Close Modal" onClick={this.handleClose}>
-            <span className="lightbox-close-hide">Close</span>
-            <svg className="lightbox-close-icon" viewBox="0 0 40 40">
-              <path d="M 10,10 L 30,30 M 30,10 L 10,30" />
-            </svg>
-          </button> */}
-          <div className="lightbox-content">{this.renderImages()}</div>
+      <div className="lightbox-backdrop">
+        <div id="lightbox" className="lightbox" onClick={this.handleClose}>
+          <button
+            className="lightbox-button lightbox-close-button"
+            aria-label="Close Modal"
+            onClick={this.handleClose}
+          >
+            <span className="lightbox-close-text">Close</span>
+            <Icon icon={ICONS.CLOSE} />
+          </button>
+          <div className="lightbox-content">
+            {this.renderPreviousArrow()}
+            {this.renderImage()}
+            {this.renderNextArrow()}
+          </div>
         </div>
       </div>,
       document.body

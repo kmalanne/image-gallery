@@ -57,16 +57,27 @@ export class Gallery extends Component<{}, GalleryState> {
     this.setState({ loading: true });
 
     try {
-      const response: any = await fetch(
-        'https://jsonplaceholder.typicode.com/album/1/photos'
-      );
-      const json = await response.json();
-      const nextImages = json.map((image: ImageProps, index: number) => ({
-        className: this.getImageClass(index),
-        id: this.state.images.length + index,
-        thumbnailUrl: image.thumbnailUrl,
-        url: image.url,
-      }));
+      // const response: any = await fetch(
+      //   'https://jsonplaceholder.typicode.com/albums/1/photos'
+      // );
+      // const json = await response.json();
+
+      // const nextImages = json.map((image: ImageProps, index: number) => ({
+      //   className: this.getImageClass(index),
+      //   id: this.state.images.length + index,
+      //   thumbnailUrl: image.thumbnailUrl,
+      //   url: image.url,
+      // }));
+
+      let nextImages: Array<ImageProps> = [];
+      for (let i = 0; i < 50; i++) {
+        nextImages.push({
+          className: this.getImageClass(i),
+          id: this.state.images.length + i,
+          thumbnailUrl: 'https://source.unsplash.com/random/400x200',
+          url: 'https://source.unsplash.com/random/800x600',
+        });
+      }
 
       this.setState({
         hasMore: true,
@@ -89,18 +100,28 @@ export class Gallery extends Component<{}, GalleryState> {
   };
 
   handleClickImage = (imageId?: number) => {
+    if (document.documentElement) {
+      document.documentElement.style.overflow = 'hidden';
+    }
+
     this.setState({ modalOpen: true, selectedImage: imageId });
   };
 
   handleCloseLightbox = () => {
+    if (document.documentElement) {
+      document.documentElement.style.overflow = 'scroll';
+    }
+
     this.setState({ modalOpen: false, selectedImage: -1 });
   };
 
   render() {
+    const { error, images, loading, modalOpen, selectedImage } = this.state;
+
     return (
       <React.Fragment>
-        <div className="gallery">
-          {this.state.images.map((image: ImageProps) => (
+        <div className={'gallery'}>
+          {images.map((image: ImageProps) => (
             <Image
               key={image.id}
               className={image.className}
@@ -110,15 +131,16 @@ export class Gallery extends Component<{}, GalleryState> {
             />
           ))}
         </div>
-        {this.state.loading && (
-          <div className={'gallery-loading-indicator'}>
+        {loading && (
+          <div className="gallery-loading-indicator">
             <LoadingIndicator />
           </div>
         )}
-        {this.state.modalOpen && (
+        {error && <div className="gallery-error">{error}</div>}
+        {modalOpen && (
           <Lightbox
-            currentImage={this.state.selectedImage}
-            images={this.state.images}
+            currentImage={selectedImage}
+            images={images}
             onClose={this.handleCloseLightbox}
           />
         )}

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 export interface ImageProps {
   className: string;
   id: number;
-  onClick: (id: number) => void;
+  onClick?: (id: number) => void;
   src?: string;
   url?: string;
   thumbnailUrl?: string;
@@ -11,7 +11,9 @@ export interface ImageProps {
 
 export class Image extends Component<ImageProps, {}> {
   handleClick = () => {
-    this.props.onClick(this.props.id);
+    if (this.props.onClick) {
+      this.props.onClick(this.props.id);
+    }
   };
 
   render() {

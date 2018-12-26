@@ -47,3 +47,8 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
+.gallery-error {
+  color: #c0392b;
+  text-align: center;
+}
