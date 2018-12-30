@@ -39,7 +39,7 @@
 }
 
 .gallery-image:hover {
-  filter: grayscale(70%);
+  filter: grayscale(80%);
 }
 
 .gallery-loading-indicator {

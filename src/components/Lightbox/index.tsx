@@ -8,21 +8,13 @@ import { ICONS } from '../../utils/constants';
 export interface LightboxProps {
   currentImage: number;
   images: Array<ImageProps>;
+  onClickImage: () => void;
+  onClickNext: () => void;
+  onClickPrevious: () => void;
   onClose: () => void;
 }
 
-export interface LightboxState {
-  imageLoaded: boolean;
-}
-
-const initialState = {
-  imageLoaded: false,
-};
-type State = Readonly<typeof initialState>;
-
-export class Lightbox extends Component<LightboxProps, LightboxState> {
-  readonly state: State = initialState;
-
+export class Lightbox extends Component<LightboxProps, {}> {
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown, false);
   }
@@ -31,48 +23,89 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
     document.removeEventListener('keydown', this.handleKeyDown, false);
   }
 
-  handleKeyDown = (event: KeyboardEvent): void => {
+  handleKeyDown = (event: KeyboardEvent): boolean => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     switch (event.keyCode) {
-      case 13:
-      case 27:
-        this.props.onClose();
-      case 37:
+      case 13: // enter
+      case 27: // esc
+        this.close();
+        return true;
+      case 37: // left
         this.goToPreviousImage();
-      case 39:
+        return true;
+      case 39: // right
         this.goToNextImage();
+        return true;
       default:
-        return;
+        return false;
     }
   };
 
-  handleClose = (
+  handleClickBackdrop = (
     event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
   ): void => {
     event.preventDefault();
 
     if ((event.target as HTMLElement).id === 'lightbox') {
-      this.props.onClose();
+      this.close();
     }
   };
 
-  handleClickImage = () => {};
+  close = () => this.props.onClose();
 
-  goToPreviousImage = () => {};
+  handleClickImage = () => this.props.onClickImage();
 
-  goToNextImage = () => {};
+  goToPreviousImage = (
+    event?: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
+  ) => {
+    const { currentImage } = this.props;
+
+    if (currentImage === 0) {
+      return;
+    }
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.props.onClickPrevious();
+  };
+
+  goToNextImage = (
+    event?: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
+  ) => {
+    const { currentImage, images } = this.props;
+
+    if (currentImage === images.length - 1) {
+      return;
+    }
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.props.onClickNext();
+  };
 
   renderImage = () => {
     const { currentImage, images } = this.props;
-
     const image = images[currentImage];
 
     return (
-      <Image
-        className="lightbox-image"
-        id={currentImage}
-        onClick={this.handleClickImage}
-        src={image.url}
-      />
+      <figure>
+        <Image
+          className="lightbox-image"
+          id={currentImage}
+          onClick={this.handleClickImage}
+          src={image.url}
+        />
+      </figure>
     );
   };
 
@@ -83,11 +116,11 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
 
     return (
       <button
-        className="lightbox-button"
+        className="lightbox-button lightbox-button-previous"
         aria-label="Previous"
         onClick={this.goToPreviousImage}
       >
-        <Icon icon={ICONS.ARROW_LEFT} size={48} />
+        <Icon icon={ICONS.ARROW_LEFT} size={72} />
       </button>
     );
   };
@@ -101,11 +134,11 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
 
     return (
       <button
-        className="lightbox-button"
+        className="lightbox-button lightbox-button-next"
         aria-label="Next"
         onClick={this.goToNextImage}
       >
-        <Icon icon={ICONS.ARROW_RIGHT} size={48} />
+        <Icon icon={ICONS.ARROW_RIGHT} size={72} />
       </button>
     );
   };
@@ -113,20 +146,22 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
   render() {
     return ReactDOM.createPortal(
       <div className="lightbox-backdrop">
-        <div id="lightbox" className="lightbox" onClick={this.handleClose}>
+        <div
+          id="lightbox"
+          className="lightbox"
+          onClick={this.handleClickBackdrop}
+        >
           <button
-            className="lightbox-button lightbox-close-button"
+            className="lightbox-button lightbox-button-close"
             aria-label="Close Modal"
-            onClick={this.handleClose}
+            onClick={this.close}
           >
             <span className="lightbox-close-text">Close</span>
             <Icon icon={ICONS.CLOSE} />
           </button>
-          <div className="lightbox-content">
-            {this.renderPreviousArrow()}
-            {this.renderImage()}
-            {this.renderNextArrow()}
-          </div>
+          <div className="lightbox-content">{this.renderImage()}</div>
+          {this.renderPreviousArrow()}
+          {this.renderNextArrow()}
         </div>
       </div>,
       document.body

@@ -6,7 +6,7 @@ import { LoadingIndicator } from '../LoadingIndicator';
 import { classNames } from '../../utils/classNames';
 
 export interface GalleryState {
-  selectedImage?: number;
+  currentImage?: number;
   error: boolean;
   hasMore: boolean;
   images: Array<ImageProps>;
@@ -15,7 +15,7 @@ export interface GalleryState {
 }
 
 const initialState = {
-  selectedImage: -1,
+  currentImage: -1,
   error: false,
   hasMore: true,
   images: [],
@@ -99,28 +99,56 @@ export class Gallery extends Component<{}, GalleryState> {
     ]);
   };
 
-  handleClickImage = (imageId?: number) => {
+  goToNextImage = () =>
+    this.setState({
+      currentImage: this.state.currentImage + 1,
+    });
+
+  goToPreviousImage = () =>
+    this.setState({
+      currentImage: this.state.currentImage - 1,
+    });
+
+  openLightbox = (imageId?: number) => {
     if (document.documentElement) {
       document.documentElement.style.overflow = 'hidden';
     }
 
-    this.setState({ modalOpen: true, selectedImage: imageId });
+    this.setState({ modalOpen: true, currentImage: imageId });
   };
 
-  handleCloseLightbox = () => {
+  closeLightbox = () => {
     if (document.documentElement) {
       document.documentElement.style.overflow = 'scroll';
     }
 
-    this.setState({ modalOpen: false, selectedImage: -1 });
+    this.setState({ modalOpen: false, currentImage: -1 });
   };
 
+  handleClickImage = (imageId?: number) => this.openLightbox(imageId);
+
+  handleClickLightboxImage = () => {
+    const { currentImage, images } = this.state;
+
+    if (currentImage === images.length - 1) {
+      return;
+    }
+
+    this.goToNextImage();
+  };
+
+  handleLightboxClose = () => this.closeLightbox();
+
+  handleClickLightboxNext = () => this.goToNextImage();
+
+  handleClickLightboxPrevious = () => this.goToPreviousImage();
+
   render() {
-    const { error, images, loading, modalOpen, selectedImage } = this.state;
+    const { currentImage, error, images, loading, modalOpen } = this.state;
 
     return (
       <React.Fragment>
-        <div className={'gallery'}>
+        <div className="gallery">
           {images.map((image: ImageProps) => (
             <Image
               key={image.id}
@@ -139,9 +167,12 @@ export class Gallery extends Component<{}, GalleryState> {
         {error && <div className="gallery-error">{error}</div>}
         {modalOpen && (
           <Lightbox
-            currentImage={selectedImage}
+            currentImage={currentImage}
             images={images}
-            onClose={this.handleCloseLightbox}
+            onClickImage={this.handleClickLightboxImage}
+            onClickNext={this.handleClickLightboxNext}
+            onClickPrevious={this.handleClickLightboxPrevious}
+            onClose={this.handleLightboxClose}
           />
         )}
       </React.Fragment>

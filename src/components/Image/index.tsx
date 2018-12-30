@@ -10,7 +10,14 @@ export interface ImageProps {
 }
 
 export class Image extends Component<ImageProps, {}> {
-  handleClick = () => {
+  handleClick = (
+    event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
+  ) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     if (this.props.onClick) {
       this.props.onClick(this.props.id);
     }
