@@ -99,15 +99,17 @@ export class Gallery extends Component<{}, GalleryState> {
     ]);
   };
 
-  goToNextImage = () =>
+  goToNextImage = () => {
     this.setState({
       currentImage: this.state.currentImage + 1,
     });
+  };
 
-  goToPreviousImage = () =>
+  goToPreviousImage = () => {
     this.setState({
       currentImage: this.state.currentImage - 1,
     });
+  };
 
   openLightbox = (imageId?: number) => {
     if (document.documentElement) {
@@ -125,7 +127,9 @@ export class Gallery extends Component<{}, GalleryState> {
     this.setState({ modalOpen: false, currentImage: -1 });
   };
 
-  handleClickImage = (imageId?: number) => this.openLightbox(imageId);
+  handleClickImage = (imageId?: number) => {
+    this.openLightbox(imageId);
+  };
 
   handleClickLightboxImage = () => {
     const { currentImage, images } = this.state;
@@ -137,11 +141,17 @@ export class Gallery extends Component<{}, GalleryState> {
     this.goToNextImage();
   };
 
-  handleLightboxClose = () => this.closeLightbox();
+  handleLightboxClose = () => {
+    this.closeLightbox();
+  };
 
-  handleClickLightboxNext = () => this.goToNextImage();
+  handleClickLightboxNext = () => {
+    this.goToNextImage();
+  };
 
-  handleClickLightboxPrevious = () => this.goToPreviousImage();
+  handleClickLightboxPrevious = () => {
+    this.goToPreviousImage();
+  };
 
   render() {
     const { currentImage, error, images, loading, modalOpen } = this.state;
