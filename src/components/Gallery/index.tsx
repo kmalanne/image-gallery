@@ -71,11 +71,12 @@ export class Gallery extends Component<{}, GalleryState> {
 
       let nextImages: Array<ImageProps> = [];
       for (let i = 0; i < 50; i++) {
+        const random = Math.floor(Math.random() * 35);
         nextImages.push({
           className: this.getImageClass(i),
           id: this.state.images.length + i,
-          thumbnailUrl: 'https://source.unsplash.com/random/400x200',
-          url: 'https://source.unsplash.com/random/800x600',
+          thumbnailUrl: `https://source.unsplash.com/collection/2411320/400x200/?sig=${random}`,
+          url: `https://source.unsplash.com/collection/2411320/1024x768/?sig=${random}`,
         });
       }
 
