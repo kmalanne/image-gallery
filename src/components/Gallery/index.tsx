@@ -10,6 +10,7 @@ export interface GalleryState {
   error: boolean;
   hasMore: boolean;
   images: Array<ImageProps>;
+  lastId: number;
   loading: boolean;
   modalOpen: boolean;
 }
@@ -19,10 +20,13 @@ const initialState = {
   error: false,
   hasMore: true,
   images: [],
+  lastId: 0,
   loading: false,
   modalOpen: false,
 };
 type State = Readonly<typeof initialState>;
+
+const LIMIT = 50;
 
 const styleClasses = ['', 'big', 'horizontal', 'vertical'];
 
@@ -56,34 +60,28 @@ export class Gallery extends Component<{}, GalleryState> {
   fetchImages = async (): Promise<void> => {
     this.setState({ loading: true });
 
+    const { images, lastId } = this.state;
+
     try {
-      // const response: any = await fetch(
-      //   'https://jsonplaceholder.typicode.com/albums/1/photos'
-      // );
-      // const json = await response.json();
+      const response: any = await fetch(
+        `${
+          process.env.REACT_APP_API_URL
+        }/albums/2/images?cursor=${lastId}&limit=${LIMIT}`
+      );
+      const json = await response.json();
 
-      // const nextImages = json.map((image: ImageProps, index: number) => ({
-      //   className: this.getImageClass(index),
-      //   id: this.state.images.length + index,
-      //   thumbnailUrl: image.thumbnailUrl,
-      //   url: image.url,
-      // }));
-
-      let nextImages: Array<ImageProps> = [];
-      for (let i = 0; i < 50; i++) {
-        const random = Math.floor(Math.random() * 35);
-        nextImages.push({
-          className: this.getImageClass(i),
-          id: this.state.images.length + i,
-          thumbnailUrl: `https://source.unsplash.com/collection/2411320/400x200/?sig=${random}`,
-          url: `https://source.unsplash.com/collection/2411320/1024x768/?sig=${random}`,
-        });
-      }
+      const nextImages = json.map((image: ImageProps, index: number) => ({
+        className: this.getImageClass(index),
+        id: images.length + index,
+        thumbnailURL: image.thumbnailURL,
+        previewURL: image.previewURL,
+      }));
 
       this.setState({
-        hasMore: true,
+        hasMore: nextImages.length === LIMIT,
+        lastId: json[json.length - 1].id,
         loading: false,
-        images: [...this.state.images, ...nextImages],
+        images: [...images, ...nextImages],
       });
     } catch (err) {
       this.setState({ error: err.message, loading: false });
@@ -166,7 +164,7 @@ export class Gallery extends Component<{}, GalleryState> {
               className={image.className}
               id={image.id}
               onClick={this.handleClickImage}
-              src={image.thumbnailUrl}
+              src={image.thumbnailURL}
             />
           ))}
         </div>

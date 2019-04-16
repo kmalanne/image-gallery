@@ -5,8 +5,8 @@ export interface ImageProps {
   id: number;
   onClick?: (id: number) => void;
   src?: string;
-  url?: string;
-  thumbnailUrl?: string;
+  previewURL?: string;
+  thumbnailURL?: string;
 }
 
 export interface ImageState {

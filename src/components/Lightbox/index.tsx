@@ -128,7 +128,7 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
     const image = new Image();
     //image.onerror = onload as ErrorEventHandler;
     image.onload = onload ? onload : null;
-    image.src = imageData.url ? imageData.url : '';
+    image.src = imageData.previewURL ? imageData.previewURL : '';
 
     return image;
   }
@@ -181,7 +181,7 @@ export class Lightbox extends Component<LightboxProps, LightboxState> {
           className="lightbox-image"
           id={currentImage}
           onClick={this.handleClickImage}
-          src={image.url}
+          src={image.previewURL}
         />
       </figure>
     );
