@@ -5,7 +5,12 @@ import { Lightbox } from '../Lightbox';
 import { LoadingIndicator } from '../LoadingIndicator';
 import { classNames } from '../../utils/classNames';
 
+export interface GalleryProps {
+  album: string;
+}
+
 export interface GalleryState {
+  albumId: number;
   currentImage?: number;
   error: boolean;
   hasMore: boolean;
@@ -16,6 +21,7 @@ export interface GalleryState {
 }
 
 const initialState = {
+  albumId: 0,
   currentImage: -1,
   error: false,
   hasMore: true,
@@ -30,10 +36,10 @@ const LIMIT = 50;
 
 const styleClasses = ['', 'big', 'horizontal', 'vertical'];
 
-export class Gallery extends Component<{}, GalleryState> {
+export class Gallery extends Component<GalleryProps, GalleryState> {
   readonly state: State = initialState;
 
-  constructor(props: any) {
+  constructor(props: GalleryProps) {
     super(props);
 
     window.onscroll = () => {
@@ -54,8 +60,28 @@ export class Gallery extends Component<{}, GalleryState> {
   }
 
   componentDidMount() {
+    this.fetchAlbum();
     this.fetchImages();
   }
+
+  fetchAlbum = async (): Promise<number> => {
+    try {
+      const response: any = await fetch(
+        `${process.env.REACT_APP_API_URL}/albums?uuid=${this.props.album}`
+      );
+      const json = await response.json();
+
+      if (json.length !== 0) {
+        const albumId = json[0].id;
+        this.setState({ albumId });
+        return albumId;
+      }
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+    }
+
+    return 0;
+  };
 
   fetchImages = async (): Promise<void> => {
     this.setState({ loading: true });
@@ -63,10 +89,15 @@ export class Gallery extends Component<{}, GalleryState> {
     const { images, lastId } = this.state;
 
     try {
+      let albumId = this.state.albumId;
+      if (albumId === 0) {
+        albumId = await this.fetchAlbum();
+      }
+
       const response: any = await fetch(
         `${
           process.env.REACT_APP_API_URL
-        }/albums/2/images?cursor=${lastId}&limit=${LIMIT}`
+        }/albums/${albumId}/images?cursor=${lastId}&limit=${LIMIT}`
       );
       const json = await response.json();
 
@@ -83,12 +114,16 @@ export class Gallery extends Component<{}, GalleryState> {
         loading: false,
         images: [...images, ...nextImages],
       });
-    } catch (err) {
-      this.setState({ error: err.message, loading: false });
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
     }
   };
 
   getImageClass = (index: number) => {
+    if (this.state.images.length < 20) {
+      return 'gallery-image';
+    }
+
     const style =
       styleClasses[Math.floor(Math.random() * Math.floor(styleClasses.length))];
 
