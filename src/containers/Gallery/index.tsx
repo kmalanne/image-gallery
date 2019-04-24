@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import './index.css';
-import { Image, ImageProps } from '../Image';
-import { Lightbox } from '../Lightbox';
-import { LoadingIndicator } from '../LoadingIndicator';
+import { Image, ImageProps } from '../../components/Image';
+import { Lightbox } from '../../components/Lightbox';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { classNames } from '../../utils/classNames';
 
 export interface GalleryProps {
@@ -36,10 +37,13 @@ const LIMIT = 50;
 
 const styleClasses = ['', 'big', 'horizontal', 'vertical'];
 
-export class Gallery extends Component<GalleryProps, GalleryState> {
+export class Gallery extends Component<
+  RouteComponentProps<GalleryProps>,
+  GalleryState
+> {
   readonly state: State = initialState;
 
-  constructor(props: GalleryProps) {
+  constructor(props: RouteComponentProps<GalleryProps>) {
     super(props);
 
     window.onscroll = () => {
@@ -65,9 +69,11 @@ export class Gallery extends Component<GalleryProps, GalleryState> {
   }
 
   fetchAlbum = async (): Promise<number> => {
+    const { params } = this.props.match;
+
     try {
       const response: any = await fetch(
-        `${process.env.REACT_APP_API_URL}/albums?uuid=${this.props.album}`
+        `${process.env.REACT_APP_API_URL}/albums?uuid=${params.album}`
       );
       const json = await response.json();
 

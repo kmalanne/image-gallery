@@ -1,8 +1,4 @@
-.App {
-  min-height: 100%;
-}
-
-.App-header {
+.header {
   min-height: 100px;
   display: flex;
   flex-direction: column;
